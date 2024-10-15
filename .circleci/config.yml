@@ -3,29 +3,22 @@ version: 2.1
 
 # Define jobs to be invoked later in a workflow.
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:current
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-
   sonarqube:
     working_directory: ~/build
     docker:
-      - image: sonarsource/sonar-scanner-cli
+      - image: cimg/base:current  # Use an image with common Linux tools like find
     resource_class: small
     steps:
-      # Install findutils before running the find command
-      - run:
-          name: "Install findutils"
-          command: |
-            apt-get update && apt-get install -y findutils
-      - run: find .  # Run the find command after installation
+      - checkout
+      - run: find .  # Use find to list the files
       - attach_workspace:
           at: ~/workspace
+      - run:
+          name: "Install sonar-scanner"
+          command: |
+            curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+            unzip sonar-scanner.zip
+            export PATH=$PATH:$(pwd)/sonar-scanner-4.6.2.2472-linux/bin
       - run:
           name: "Run SonarQube scanner"
           command: |
@@ -43,7 +36,6 @@ jobs:
 
 # Orchestrate jobs using workflows
 workflows:
-  say-hello-workflow:
+  sonarqube-workflow:
     jobs:
-      - say-hello
       - sonarqube
