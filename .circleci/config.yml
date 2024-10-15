@@ -18,7 +18,7 @@ jobs:
       - image: sonarsource/sonar-scanner-cli
     resource_class: small
     steps:
-      - run: find .
+      - checkout  # Use this step to check out your project files
       - attach_workspace:
           at: ~/workspace
       - run:
