@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import cors from 'cors';
 import authRoutes from './routes/auth.mjs';
 import paymentRoutes from './routes/payments.mjs';
+import adminAuthRoutes from './routes/adminAuth.mjs';
+import adminPaymentRoutes from './routes/adminPayments.mjs';
+import payeeAccountRoutes from './routes/payeeAccountRoutes.mjs'; 
 import https from 'https';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
@@ -16,26 +19,29 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-app.use(helmet()); // Protects against some vulnerabilities
-app.use(xss()); // Sanitize user input
 
-// Rate limiting to prevent DDoS attacks
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true,
+}));
+
+app.use(helmet());
+app.use(xss());
+
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // Limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100
 });
 app.use(limiter);
 
-// Secure Headers
-app.use(helmet.frameguard({ action: 'deny' })); // Prevents clickjacking
+app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.hsts({
-    maxAge: 31536000, // 1 year in seconds
+    maxAge: 31536000,
     includeSubDomains: true,
     preload: true
 }));
 
-// Database connection
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
@@ -43,17 +49,17 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 // Routes
 app.use('/api', authRoutes);
 app.use('/api', paymentRoutes);
+app.use('/api/admin', adminAuthRoutes);  // Admin routes
+app.use('/api/admin', adminPaymentRoutes);  // Admin payment routes
+app.use('/api', payeeAccountRoutes); 
 
-// Serve the application over HTTPS
 const PORT = process.env.PORT || 5000;
 
-// SSL options (ensure you have valid SSL certificate files)
 const sslOptions = {
-    key: fs.readFileSync('keys/privatekey.pem'), // Path to your SSL key
-    cert: fs.readFileSync('keys/certificate.pem'), // Path to your SSL certificate
+    key: fs.readFileSync('keys/privatekey.pem'),
+    cert: fs.readFileSync('keys/certificate.pem'),
 };
 
-// Create HTTPS server
 https.createServer(sslOptions, app)
     .listen(PORT, () => {
         console.log(`Secure server running on port ${PORT}`);
