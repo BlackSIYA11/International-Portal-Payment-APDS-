@@ -30,38 +30,53 @@ bash
 Copy
 Edit
 git clone https://github.com/BlackSIYA11/International-Portal-Payment-APDS.git
+
 cd International-Portal-Payment-APDS
+
 Install dependencies
 
 bash
 Copy
 Edit
+
 npm install
+
 Create a .env file and add the following:
 
 ini
+
 Copy
+
 Edit
+
 ATLAS_URI=your_mongo_connection_string
+
 JWT_SECRET=your_secret_key
+
 Start the application
 
 bash
 Copy
+
 Edit
 npm start
+
 📡 API Endpoints
+
 🔑 Authentication
+
 POST /admin/register – Register an admin account
 
 POST /admin/login – Admin login
 
 💼 Transactions
+
 GET /transactions – Fetch all transactions (Admin only)
 
 POST /transactions – Create a new transaction
 
 🔐 Security Best Practices
+
 Use HTTPS in production environments
 
 Implement rate limiting to prevent brute-force attacks
