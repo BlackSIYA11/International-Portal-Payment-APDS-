@@ -1,7 +1,9 @@
-🌐 International Portal Payment System (APDS)
+**🌐 International Portal Payment System (APDS)**
+
 A secure international payment portal that enables users to perform cross-border financial transactions. This project includes admin authentication, transaction management, and robust security features. Developed as part of a university group assignment for the Application Development Security (APDS) module.
 
 ✅ Features
+
 🔐 User & Admin Authentication using JWT
 
 💳 Secure Transaction Processing
